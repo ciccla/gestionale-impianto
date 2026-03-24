@@ -53,6 +53,7 @@
       border: 1px solid #c8e6c9;
       border-radius: 5px;
       font-size: 14px;
+      box-sizing: border-box;
     }
 
     button {
@@ -107,7 +108,6 @@
       border-top: 1px solid #ccc;
     }
 
-    /* Messaggi inline */
     .notifica {
       margin-top: 15px;
       padding: 10px;
@@ -115,11 +115,13 @@
       font-size: 14px;
       display: none;
     }
+
     .notifica.error {
       background: #f8d7da;
       color: #721c24;
       border: 1px solid #f5c6cb;
     }
+
     .notifica.success {
       background: #d4edda;
       color: #155724;
@@ -170,71 +172,6 @@
     © 2025 Ecodrin - P.I: 03378791218 Tutti i diritti riservati
   </footer>
 
-  <script>
-    document.getElementById('register-form').addEventListener('submit', async function (e) {
-      e.preventDefault();
-      const notifica = document.getElementById('notifica');
-      notifica.style.display = 'none';
-      notifica.className = 'notifica';
-
-      const password = document.getElementById('password').value;
-      const confirm = document.getElementById('confirm_password').value;
-
-      if (password !== confirm) {
-        notifica.textContent = '❌ Le password non coincidono';
-        notifica.classList.add('error');
-        notifica.style.display = 'block';
-        return;
-      }
-
-      const formData = new FormData(this);
-
-      try {
-        const res = await fetch(this.action, { method: 'POST', body: formData });
-
-        const text = await res.text();
-        if (text && text.toLowerCase().includes('successo')) {
-          notifica.textContent = text;
-          notifica.classList.add('success');
-          notifica.style.display = 'block';
-          setTimeout(() => window.location.href = '/cliente/login.html', 1000);
-        } else {
-          notifica.textContent = text || 'Registrazione non riuscita';
-          notifica.classList.add('error');
-          notifica.style.display = 'block';
-        }
-      } catch (err) {
-        notifica.textContent = 'Errore di rete. Riprova.';
-        notifica.classList.add('error');
-        notifica.style.display = 'block';
-      }
-    });
-    
-
-    
- 
-// === Recupera il token CSRF dal server e lo allega al form ===
-(async () => {
-  try {
-    const res = await fetch('/csrf-token', { credentials: 'include' });
-    const data = await res.json();
-
-    // Inserisci il token nel form
-    const form = document.getElementById('register-form');
-    let tokenInput = form.querySelector('input[name="_csrf"]');
-    if (!tokenInput) {
-      tokenInput = document.createElement('input');
-      tokenInput.type = 'hidden';
-      tokenInput.name = '_csrf';
-      form.appendChild(tokenInput);
-    }
-    tokenInput.value = data.csrfToken;
-    console.log('✅ CSRF token impostato correttamente');
-  } catch (err) {
-    console.error('❌ Errore ottenendo CSRF token:', err);
-  }
-})();
-</script>
-
+  <script src="/cliente/register.js"></script>
 </body>
 </html>
