@@ -121,11 +121,13 @@
       font-size: 14px;
       display: none;
     }
+
     .notifica.error {
       background: #f8d7da;
       color: #721c24;
       border: 1px solid #f5c6cb;
     }
+
     .notifica.success {
       background: #d4edda;
       color: #155724;
@@ -174,70 +176,6 @@
   © 2025 Ecodrin - P.I: 03378791218 Tutti i diritti riservati
 </footer>
 
-<script>
-  document.getElementById('login-form').addEventListener('submit', async function (e) {
-    e.preventDefault();
-    const notifica = document.getElementById('notifica');
-    notifica.style.display = 'none';
-    notifica.className = 'notifica';
-
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
-
-    if (!username || !password) {
-      notifica.textContent = '⚠️ Compila tutti i campi.';
-      notifica.classList.add('error');
-      notifica.style.display = 'block';
-      return;
-    }
-
-    try {
-     const res = await fetch(this.action, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  credentials: 'include', // necessario per mantenere la sessione e il cookie
-  body: JSON.stringify({
-    username,
-    password,
-    _csrf: window.__csrfToken // aggiunge il token CSRF
-  })
-});
-
-      if (res.redirected) {
-        window.location.href = res.url;
-        return;
-      }
-
-      const text = await res.text();
-      if (text && text.toLowerCase().includes('successo')) {
-        notifica.textContent = '✅ Accesso effettuato con successo';
-        notifica.classList.add('success');
-        notifica.style.display = 'block';
-        setTimeout(() => window.location.href = '/cliente/dashboard.html', 800);
-      } else {
-        notifica.textContent = text || '❌ Credenziali errate.';
-        notifica.classList.add('error');
-        notifica.style.display = 'block';
-      }
-    } catch (err) {
-      notifica.textContent = '❌ Errore di rete. Riprova.';
-      notifica.classList.add('error');
-      notifica.style.display = 'block';
-    }
-  });
-  
-// === Recupera il token CSRF dal server e lo allega alla richiesta ===
-(async () => {
-  try {
-    const res = await fetch('/csrf-token', { credentials: 'include' });
-    const data = await res.json();
-    window.__csrfToken = data.csrfToken;
-    console.log('✅ CSRF token login impostato correttamente');
-  } catch (err) {
-    console.error('❌ Errore ottenendo CSRF token:', err);
-  }
-})();
-</script>
-
+<script src="/cliente/login.js"></script>
 </body>
 </html>

@@ -1,12 +1,14 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const form = document.getElementById('login-form');
-  const errorMsg = document.getElementById('error-msg');
+  const notifica = document.getElementById('notifica');
 
   let csrfToken = '';
 
-  function mostraErrore(testo) {
-    errorMsg.textContent = testo;
-    errorMsg.style.display = 'block';
+  function mostraMessaggio(testo, tipo = 'error') {
+    notifica.textContent = testo;
+    notifica.className = 'notifica';
+    notifica.classList.add(tipo);
+    notifica.style.display = 'block';
   }
 
   async function caricaCsrfToken() {
@@ -30,21 +32,30 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     tokenInput.value = csrfToken;
+    console.log('✅ CSRF token login impostato correttamente');
   }
 
   try {
     await caricaCsrfToken();
   } catch (err) {
-    console.error(err);
-    mostraErrore('Errore di sicurezza. Ricarica la pagina.');
+    console.error('❌ Errore ottenendo CSRF token:', err);
+    mostraMessaggio('Errore di sicurezza. Ricarica la pagina.');
     return;
   }
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    errorMsg.style.display = 'none';
-    errorMsg.textContent = '';
+    notifica.style.display = 'none';
+    notifica.className = 'notifica';
+
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (!username || !password) {
+      mostraMessaggio('⚠️ Compila tutti i campi.');
+      return;
+    }
 
     try {
       const formData = new FormData(form);
@@ -63,14 +74,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       const text = await res.text();
 
       if (res.ok && text.toLowerCase().includes('successo')) {
-        window.location.href = '/cliente/dashboard.html';
+        mostraMessaggio('✅ Accesso effettuato con successo', 'success');
+        setTimeout(() => {
+          window.location.href = '/cliente/dashboard.html';
+        }, 800);
         return;
       }
 
-      mostraErrore(text || 'Login non riuscito');
+      mostraMessaggio(text || '❌ Credenziali errate.');
     } catch (err) {
       console.error(err);
-      mostraErrore('Errore di rete. Riprova.');
+      mostraMessaggio('❌ Errore di rete. Riprova.');
     }
   });
 });
