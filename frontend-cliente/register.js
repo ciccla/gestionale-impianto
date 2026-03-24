@@ -2,6 +2,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const form = document.getElementById('register-form');
   const notifica = document.getElementById('notifica');
 
+  let csrfToken = '';
+
   function mostraMessaggio(testo, tipo = 'error') {
     notifica.textContent = testo;
     notifica.className = 'notifica';
@@ -9,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     notifica.style.display = 'block';
   }
 
-  async function impostaCsrfToken() {
+  async function caricaCsrfToken() {
     const res = await fetch('/csrf-token', {
       credentials: 'include'
     });
@@ -19,6 +21,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const data = await res.json();
+    csrfToken = data.csrfToken;
 
     let tokenInput = form.querySelector('input[name="_csrf"]');
     if (!tokenInput) {
@@ -28,19 +31,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       form.appendChild(tokenInput);
     }
 
-    tokenInput.value = data.csrfToken;
+    tokenInput.value = csrfToken;
     console.log('✅ CSRF token impostato correttamente');
   }
 
   try {
-    await impostaCsrfToken();
+    await caricaCsrfToken();
   } catch (err) {
     console.error('❌ Errore ottenendo CSRF token:', err);
     mostraMessaggio('Errore di sicurezza: ricarica la pagina e riprova.');
     return;
   }
 
-  form.addEventListener('submit', async function (e) {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     notifica.style.display = 'none';
@@ -54,12 +57,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       return;
     }
 
-    const formData = new FormData(form);
-
     try {
+      const formData = new FormData(form);
+      const body = new URLSearchParams(formData);
+
       const res = await fetch(form.action, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'CSRF-Token': csrfToken
+        },
+        body,
         credentials: 'include'
       });
 
