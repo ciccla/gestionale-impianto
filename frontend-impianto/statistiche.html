@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Statistiche - Ecodrin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    /* Generale */
+    .chart-container {
+      margin-top: 30px;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 1000px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 500px !important; /* Aumentato per maggiore visibilità */
+    }
+
+    /* Sezione Statistiche */
+    .stat-section {
+      padding: 20px;
+    }
+
+    .totali-box {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 30px;
+    }
+
+    .totale {
+      flex: 1;
+      min-width: 180px;
+      padding: 20px;
+      background: #dcedc8;
+      border-radius: 8px;
+      font-size: 1.2em;
+      font-weight: bold;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    /* Grafici */
+    .chart-container h3 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2e7d32;
+      font-size: 1.5em;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #f1f1f1;
+      color: #555;
+      font-size: 0.9em;
+      border-top: 1px solid #ccc;
+      margin-top: 40px;
+    }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-utente">
+    <img src="/img/logo.png" alt="Logo Ecodrin" />
+    <span>👤 Impianto</span>
+  </div>
+  <div class="nav-buttons">
+    <button onclick="location.href='dashboard.html'">🏠 Prenotazioni</button>
+    <button onclick="location.href='dashboard-trasporti.html'">🚚 Trasporti</button>
+    <button onclick="location.href='statistiche.html'">📊 Statistiche</button>
+    <button onclick="location.href='utenti.html'">👥 Utenti</button>
+    <!-- NEW: link cambio password -->
+    <button onclick="location.href='cambia-password.html'">🔑 Cambia password</button>
+    <button onclick="location.href='/impianto/logout'">🔒 Logout</button>
+  </div>
+</header>
+
+<div class="stat-section">
+  <div class="totali-box">
+    <div class="totale">📦 Prenotazioni: <span id="tot-prenotazioni">0</span></div>
+    <div class="totale">🚚 Trasporti: <span id="tot-trasporti">0</span></div>
+    <div class="totale">👥 Utenti: <span id="tot-utenti">0</span></div>
+  </div>
+
+  <div class="chart-container">
+    <h3>📈 Prenotazioni per giorno</h3>
+    <canvas id="prenotazioniGiorno"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h3>📦 Prenotazioni per stato</h3>
+    <canvas id="statoPrenotazioni"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h3>🚚 Trasporti per tipo automezzo</h3>
+    <canvas id="tipoAutomezzo"></canvas>
+  </div>
+
+  <div class="chart-container">
+    <h3>👥 Utenti per ruolo</h3>
+    <canvas id="utentiRuolo"></canvas>
+  </div>
+</div>
+
+<script>
+  // Caricamento Statistiche reali
+  function caricaStatistiche() {
+    fetch('/stats/dati-completi')
+      .then(res => res.json())
+      .then(data => {
+        const prenotazioniPerGiorno = {};
+        const statiPrenotazioni = {};
+        const tipiAutomezzo = {};
+        const ruoliUtenti = {};
+
+        data.prenotazioni.forEach(p => {
+          const giorno = p.giorno_conferimento;
+          const stato = p.stato || 'in attesa';
+          prenotazioniPerGiorno[giorno] = (prenotazioniPerGiorno[giorno] || 0) + 1;
+          statiPrenotazioni[stato] = (statiPrenotazioni[stato] || 0) + 1;
+        });
+
+        data.trasporti.forEach(t => {
+          tipiAutomezzo[t.tipo_automezzo] = (tipiAutomezzo[t.tipo_automezzo] || 0) + 1;
+        });
+
+        data.utenti.forEach(u => {
+          ruoliUtenti[u.ruolo] = (ruoliUtenti[u.ruolo] || 0) + 1;
+        });
+
+        // Totali
+        const totPrenotazioni = Object.values(statiPrenotazioni).reduce((a, b) => a + b, 0);
+        const totTrasporti = Object.values(tipiAutomezzo).reduce((a, b) => a + b, 0);
+        const totUtenti = Object.values(ruoliUtenti).reduce((a, b) => a + b, 0);
+
+        document.getElementById('tot-prenotazioni').textContent = totPrenotazioni;
+        document.getElementById('tot-trasporti').textContent = totTrasporti;
+        document.getElementById('tot-utenti').textContent = totUtenti;
+
+        // Grafico Prenotazioni Giorno
+        new Chart(document.getElementById('prenotazioniGiorno'), {
+          type: 'line',
+          data: {
+            labels: Object.keys(prenotazioniPerGiorno),
+            datasets: [{
+              label: 'Prenotazioni',
+              data: Object.values(prenotazioniPerGiorno),
+              backgroundColor: '#aed581',
+              borderColor: '#558b2f',
+              tension: 0.3,
+              fill: true
+            }]
+          }
+        });
+
+        // Grafico Stato Prenotazioni
+        new Chart(document.getElementById('statoPrenotazioni'), {
+          type: 'doughnut',
+          data: {
+            labels: Object.keys(statiPrenotazioni),
+            datasets: [{
+              label: 'Stato Prenotazioni',
+              data: Object.values(statiPrenotazioni),
+              backgroundColor: ['#43a047', '#e53935', '#1e88e5', '#fbc02d']
+            }]
+          }
+        });
+
+        // Grafico Tipo Automezzo
+        new Chart(document.getElementById('tipoAutomezzo'), {
+          type: 'bar',
+          data: {
+            labels: Object.keys(tipiAutomezzo),
+            datasets: [{
+              label: 'Numero trasporti',
+              data: Object.values(tipiAutomezzo),
+              backgroundColor: '#81c784'
+            }]
+          }
+        });
+
+        // Grafico Utenti Ruolo
+        new Chart(document.getElementById('utentiRuolo'), {
+          type: 'pie',
+          data: {
+            labels: Object.keys(ruoliUtenti),
+            datasets: [{
+              label: 'Utenti per ruolo',
+              data: Object.values(ruoliUtenti),
+              backgroundColor: ['#66bb6a', '#ff7043']
+            }]
+          }
+        });
+      });
+  }
+
+  caricaStatistiche();
+</script>
+
+<footer>
+  © 2025 Ecodrin - P.I: 03378791218 Tutti i diritti riservati
+</footer>
+
+</body>
+</html>

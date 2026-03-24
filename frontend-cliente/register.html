@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrazione Cliente</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f1f8e9;
+      color: #2e7d32;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px 20px;
+    }
+
+    .register-container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #2e7d32;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #33691e;
+    }
+
+    input[type="email"],
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #c8e6c9;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      margin-top: 25px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #27642b;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .login-link a {
+      color: #2e7d32;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .logo-footer {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .logo-footer img {
+      max-width: 150px;
+      height: auto;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #f1f1f1;
+      color: #555;
+      font-size: 0.9em;
+      border-top: 1px solid #ccc;
+    }
+
+    /* Messaggi inline */
+    .notifica {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: none;
+    }
+    .notifica.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .notifica.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    @media (max-width: 480px) {
+      .register-container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-content">
+    <div class="register-container">
+      <h1>Registrazione Cliente</h1>
+
+      <form action="/cliente/register" method="POST" id="register-form" novalidate>
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" placeholder="es. mario.rossi@mail.it" required>
+
+        <label for="username">Username</label>
+        <input type="text" name="username" id="username" placeholder="Scegli un username" required>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" id="password" placeholder="••••••••" required>
+
+        <label for="confirm_password">Conferma Password</label>
+        <input type="password" name="confirm_password" id="confirm_password" placeholder="Ripeti la password" required>
+
+        <button type="submit">Registrati</button>
+        <div id="notifica" class="notifica"></div>
+      </form>
+
+      <div class="login-link">
+        Hai già un account? <a href="login.html">Accedi</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="logo-footer">
+    <img src="/logo.png" alt="Logo Ecodrin">
+  </div>
+
+  <footer>
+    © 2025 Ecodrin - P.I: 03378791218 Tutti i diritti riservati
+  </footer>
+
+  <script>
+    document.getElementById('register-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const notifica = document.getElementById('notifica');
+      notifica.style.display = 'none';
+      notifica.className = 'notifica';
+
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm_password').value;
+
+      if (password !== confirm) {
+        notifica.textContent = '❌ Le password non coincidono';
+        notifica.classList.add('error');
+        notifica.style.display = 'block';
+        return;
+      }
+
+      const formData = new FormData(this);
+
+      try {
+        const res = await fetch(this.action, { method: 'POST', body: formData });
+
+        const text = await res.text();
+        if (text && text.toLowerCase().includes('successo')) {
+          notifica.textContent = text;
+          notifica.classList.add('success');
+          notifica.style.display = 'block';
+          setTimeout(() => window.location.href = '/cliente/login.html', 1000);
+        } else {
+          notifica.textContent = text || 'Registrazione non riuscita';
+          notifica.classList.add('error');
+          notifica.style.display = 'block';
+        }
+      } catch (err) {
+        notifica.textContent = 'Errore di rete. Riprova.';
+        notifica.classList.add('error');
+        notifica.style.display = 'block';
+      }
+    });
+    
+
+    
+ 
+// === Recupera il token CSRF dal server e lo allega al form ===
+(async () => {
+  try {
+    const res = await fetch('/csrf-token', { credentials: 'include' });
+    const data = await res.json();
+
+    // Inserisci il token nel form
+    const form = document.getElementById('register-form');
+    let tokenInput = form.querySelector('input[name="_csrf"]');
+    if (!tokenInput) {
+      tokenInput = document.createElement('input');
+      tokenInput.type = 'hidden';
+      tokenInput.name = '_csrf';
+      form.appendChild(tokenInput);
+    }
+    tokenInput.value = data.csrfToken;
+    console.log('✅ CSRF token impostato correttamente');
+  } catch (err) {
+    console.error('❌ Errore ottenendo CSRF token:', err);
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Nuova Prenotazione</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f1f8e9;
+      color: #2e7d32;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    form {
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      max-width: 650px;
+      width: 100%;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #c8e6c9;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    .caratteristiche-pericolo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 5px;
+    }
+
+    .caratteristiche-pericolo label {
+      font-weight: normal;
+    }
+
+    button {
+      background: #2e7d32;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      margin-top: 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #27642b;
+    }
+
+    .notifica {
+      margin-top: 20px;
+      padding: 12px;
+      font-weight: bold;
+      border-radius: 5px;
+    }
+
+    .link-dashboard {
+      display: inline-block;
+      background: #388e3c;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 4px;
+      text-decoration: none;
+      margin-bottom: 20px;
+    }
+
+    #altroImballo {
+      margin-top: 10px;
+    }
+
+    .logo-footer {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .logo-footer img {
+      max-width: 150px;
+      height: auto;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #f1f1f1;
+      color: #555;
+      font-size: 0.9em;
+      border-top: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-content">
+    <h1>Inserisci Prenotazione</h1>
+
+    <a href="/cliente/dashboard.html" class="link-dashboard">⬅ Torna alla Dashboard</a>
+
+    <form id="prenotazioneForm" enctype="multipart/form-data">
+      <label for="ragione_sociale">Ragione Sociale</label>
+      <input type="text" name="ragione_sociale" id="ragione_sociale" required>
+
+      <label for="produttore">Produttore</label>
+      <input type="text" name="produttore" id="produttore" required>
+
+      <!-- ✅ NUOVO CAMPO: Codice CER -->
+      <label for="codice_cer">Codice CER</label>
+      <select name="codice_cer" id="codice_cer" required>
+        <option value="">Seleziona codice CER</option>
+        <option value="15 01 10">15 01 10* — imballaggi contenenti residui di sostanze pericolose</option>
+        <option value="20 01 21">20 01 21* — tubi fluorescenti ed altri rifiuti contenenti mercurio</option>
+        <option value="20 01 35">20 01 35* — AEE fuori uso con componenti pericolosi</option>
+        <option value="20 01 36">20 01 36 — AEE fuori uso (senza pericolosità)</option>
+        <option value="20 03 01">20 03 01 — rifiuti urbani non differenziati</option>
+      </select>
+
+      <label>Caratteristiche di Pericolo</label>
+      <div class="caratteristiche-pericolo">
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP1"> HP1</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP2"> HP2</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP3"> HP3</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP4"> HP4</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP5"> HP5</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP6"> HP6</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP7"> HP7</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP8"> HP8</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP9"> HP9</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP10"> HP10</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP11"> HP11</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP12"> HP12</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP13"> HP13</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP14"> HP14</label>
+        <label><input type="checkbox" name="caratteristiche_pericolo" value="HP15"> HP15</label>
+      </div>
+      
+
+      <label for="tipo_imballo">Tipo di Imballo</label>
+      <select name="tipo_imballo" id="tipo_imballo" onchange="checkAltro()" required>
+        <option value="">Seleziona</option>
+        <option value="Sfuso">Sfuso</option>
+        <option value="Cisternetta">Cisternetta</option>
+        <option value="Big Bags">Big Bags</option>
+        <option value="Pallet">Pallet</option>
+        <option value="Fusti">Fusti</option>
+        <option value="Altro">Altro</option>
+      </select>
+
+      <div id="altroImballo" style="display: none;">
+        <label for="tipo_imballo_altro">Specificare Altro</label>
+        <input type="text" name="tipo_imballo_altro" id="tipo_imballo_altro">
+      </div>
+
+      <label for="stato_fisico">Stato Fisico</label>
+      <select name="stato_fisico" id="stato_fisico" required>
+        <option value="">Seleziona</option>
+        <option value="SP">SP (in polvere o polverulento)</option>
+        <option value="S">S (solido)</option>
+        <option value="VS">VS (vischioso/sciropposo)</option>
+        <option value="FP">FP (fangoso)</option>
+        <option value="L">L (liquido)</option>
+      </select>
+
+      <label for="quantita">Quantità (in KG)</label>
+      <input type="number" name="quantita" id="quantita" required>
+
+      <label for="giorno_conferimento">Data Conferimento</label>
+      <input type="date" name="giorno_conferimento" id="giorno_conferimento" required>
+
+      <label for="certificato_analitico">Certificato Analitico (PDF o immagine)</label>
+      <input type="file" name="certificato_analitico" id="certificato_analitico" accept=".pdf,image/*">
+
+      <button type="submit">Invia Prenotazione</button>
+      <div id="notifica" class="notifica" style="display:none;"></div>
+    </form>
+  </div>
+
+  <div class="logo-footer">
+    <img src="/logo.png" alt="Logo Ecodrin">
+  </div>
+
+  <footer>
+    © 2025 Ecodrin - P.I: 03378791218 Tutti i diritti riservati
+  </footer>
+
+  <script>
+    function checkAltro() {
+      const val = document.getElementById('tipo_imballo').value;
+      document.getElementById('altroImballo').style.display = val === 'Altro' ? 'block' : 'none';
+    }
+
+    document.getElementById('prenotazioneForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const notifica = document.getElementById('notifica');
+
+      // ✅ Validazioni aggiuntive senza cambiare il tuo stile di notifica
+      const qtaEl = document.getElementById('quantita');
+      const qta = parseFloat(qtaEl.value);
+      if (isNaN(qta) || qta <= 0) {
+        notifica.style.display = 'block';
+        notifica.textContent = 'La quantità deve essere un numero maggiore di 0';
+        notifica.style.backgroundColor = '#f8d7da';
+        notifica.style.color = '#721c24';
+        qtaEl.focus();
+        return;
+      }
+
+      const dataEl = document.getElementById('giorno_conferimento');
+      const dataVal = dataEl.value;
+      const oggi = new Date(); oggi.setHours(0,0,0,0);
+      const dataSel = new Date(dataVal); dataSel.setHours(0,0,0,0);
+      if (!dataVal || dataSel < oggi) {
+        notifica.style.display = 'block';
+        notifica.textContent = 'La data di conferimento non può essere nel passato';
+        notifica.style.backgroundColor = '#f8d7da';
+        notifica.style.color = '#721c24';
+        dataEl.focus();
+        return;
+      }
+
+      const res = await fetch('/cliente/prenotazione', {
+        method: 'POST',
+        body: formData
+      });
+
+      const msg = await res.text();
+      notifica.style.display = 'block';
+      notifica.textContent = msg;
+
+      if (msg.includes("✅")) {
+        notifica.style.backgroundColor = '#d4edda';
+        notifica.style.color = '#155724';
+        this.reset();
+        checkAltro();
+      } else {
+        notifica.style.backgroundColor = '#f8d7da';
+        notifica.style.color = '#721c24';
+      }
+
+      setTimeout(() => notifica.style.display = 'none', 4000);
+    });
+  </script>
+</body>
+</html>

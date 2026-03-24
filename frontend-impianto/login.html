@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Amministratore - Ecodrin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f1f8e9;
+      color: #2e7d32;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .login-container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #2e7d32;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #33691e;
+    }
+
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #c8e6c9;
+      border-radius: 5px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #27642b;
+    }
+
+    .error {
+      color: #c62828;
+      margin-top: 10px;
+      font-size: 0.9em;
+      display: none;
+    }
+
+    .logo-footer {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .logo-footer img {
+      max-width: 150px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #f1f1f1;
+      color: #555;
+      font-size: 0.9em;
+      border-top: 1px solid #ccc;
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-content">
+    <div class="login-container">
+      <h1>Login Amministratore</h1>
+
+      <form id="admin-login-form">
+        <label for="username">Email Admin</label>
+        <input type="text" id="username" name="username" required>
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Accedi</button>
+        <div id="error-msg" class="error">Credenziali errate</div>
+      </form>
+    </div>
+  </div>
+
+  <div class="logo-footer">
+    <img src="/img/logo.png" alt="Logo Ecodrin">
+  </div>
+
+  <footer>
+    © 2025 Ecodrin - P.I: 03378791218 Tutti i diritti riservati
+  </footer>
+
+  <script src="/impianto/login-admin.js"></script>
+</body>
+</html>

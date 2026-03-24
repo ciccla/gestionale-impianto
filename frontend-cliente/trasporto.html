@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Richiesta Trasporto</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f1f8e9;
+      color: #2e7d32;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    .form-container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #2e7d32;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #33691e;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #c8e6c9;
+      border-radius: 5px;
+      font-size: 14px;
+      box-sizing: border-box;
+      background: #fff;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 25px;
+      padding: 12px;
+      background: #2e7d32;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #27642b;
+    }
+
+    .back-link {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .back-link a {
+      color: #2e7d32;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .back-link a:hover {
+      text-decoration: underline;
+    }
+
+    .logo-footer {
+      text-align: center;
+      margin-top: 30px;
+    }
+
+    .logo-footer img {
+      max-width: 150px;
+      height: auto;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: #f1f1f1;
+      color: #555;
+      font-size: 0.9em;
+      border-top: 1px solid #ccc;
+    }
+
+    #avviso-trasporto {
+      color: #c62828;
+      font-size: 0.9em;
+      margin-top: 8px;
+    }
+
+    /* Notifica inline */
+    .notifica {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: none;
+    }
+    .notifica.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    .notifica.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    @media (max-width: 500px) {
+      .form-container {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main-content">
+    <div class="form-container">
+      <h1>Richiesta Trasporto</h1>
+
+      <div class="back-link">
+        <a href="dashboard.html">⬅ Torna alla Dashboard</a>
+      </div>
+
+      <form id="trasportoForm">
+        <label>Richiedente</label>
+        <input type="text" name="richiedente" required placeholder="Ragione sociale / nominativo">
+
+        <label>Produttore</label>
+        <input type="text" name="produttore" required placeholder="Produttore del rifiuto">
+
+        <label>Codice CER</label>
+        <input type="text" name="codice_cer" id="codice_cer" required placeholder="es. 15 01 10">
+
+        <label>Tipo di Automezzo</label>
+        <select name="tipo_automezzo" id="tipo_automezzo" required onchange="controllaAutomezzo()">
+          <option value="">Seleziona</option>
+          <option>Furgone</option>
+          <option>Eurocargo 100 con cassa scarrabile</option>
+          <option>Eurocargo 100 con ragno</option>
+          <option>Motrice con cassa scarrabile</option>
+          <option>Motrice con ragno</option>
+          <option>Bilico</option>
+          <option>Cisterna 5mc</option>
+          <option>Cisterna 10mc</option>
+          <option>Cisterna 30mc</option>
+        </select>
+
+        <label>Tipo di Trasporto</label>
+        <select name="tipo_trasporto" id="tipo_trasporto" disabled required>
+          <option value="">Seleziona</option>
+          <option value="Cambio Cassa">Cambio Cassa</option>
+          <option value="Ritiro Definitivo">Ritiro Definitivo</option>
+        </select>
+
+        <small id="avviso-trasporto" style="display: none;">
+          Il tipo di trasporto è disponibile solo per automezzi con cassa scarrabile.
+        </small>
+
+        <label>Data del Trasporto</label>
+        <input type="date" name="data_trasporto" id="data_trasporto" required>
+
+        <label>Fascia Oraria Preferita</label>
+        <select name="orario_preferito" required>
+          <option value="">Seleziona una fascia</option>
+          <option value="08:30-10:30">08:30 - 10:30</option>
+          <option value="10:30-12:30">10:30 - 12:30</option>
+          <option value="14:30-16:30">14:30 - 16:30</option>
+          <option value="16:30-18:30">16:30 - 18:30</option>
+        </select>
+
+        <label>Numero di Referente</label>
+        <input type="tel" name="numero_referente" id="numero_referente" required placeholder="es. 3331234567">
+
+        <label>Prezzo Pattuito (€)</label>
+        <input type="number" name="prezzo_pattuito" id="prezzo_pattuito" step="0.01" required placeholder="0,00">
+
+        <button type="submit">Invia Richiesta</button>
+        <div id="notifica" class="notifica"></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="logo-footer">
+    <img src="/logo.png" alt="Logo Ecodrin">
+  </div>
+
+  <footer>
+    © 2025 Ecodrin - P.I: 03378791218 Tutti i diritti riservati
+  </footer>
+
+  <script>
+    function controllaAutomezzo() {
+      const tipoAutomezzo = document.getElementById('tipo_automezzo').value;
+      const tipoTrasporto = document.getElementById('tipo_trasporto');
+      const avviso = document.getElementById('avviso-trasporto');
+
+      const sbloccati = [
+        'Eurocargo 100 con cassa scarrabile',
+        'Motrice con cassa scarrabile'
+      ];
+
+      if (sbloccati.includes(tipoAutomezzo)) {
+        tipoTrasporto.disabled = false;
+        avviso.style.display = 'none';
+      } else {
+        tipoTrasporto.disabled = true;
+        tipoTrasporto.value = '';
+        avviso.style.display = 'block';
+      }
+    }
+
+    // Validazioni extra prima dell'invio
+    function validateForm() {
+      const notifica = document.getElementById('notifica');
+      notifica.style.display = 'none';
+      notifica.className = 'notifica';
+
+      // CER formato NN NN NN
+      const cer = document.getElementById('codice_cer').value.trim();
+      const cerOk = /^\d{2}\s\d{2}\s\d{2}\*?$/.test(cer);
+      if (!cerOk) {
+        notifica.textContent = 'Inserisci un codice CER valido (formato es. "15 01 10" o con * finale).';
+        notifica.classList.add('error');
+        notifica.style.display = 'block';
+        return false;
+      }
+
+      // Data non nel passato
+      const dataEl = document.getElementById('data_trasporto');
+      const val = dataEl.value;
+      if (!val) {
+        notifica.textContent = 'Seleziona la data del trasporto.';
+        notifica.classList.add('error');
+        notifica.style.display = 'block';
+        return false;
+      }
+      const oggi = new Date(); oggi.setHours(0,0,0,0);
+      const dataSel = new Date(val); dataSel.setHours(0,0,0,0);
+      if (dataSel < oggi) {
+        notifica.textContent = 'La data del trasporto non può essere nel passato.';
+        notifica.classList.add('error');
+        notifica.style.display = 'block';
+        return false;
+      }
+
+      // Telefono base
+      const tel = document.getElementById('numero_referente').value.replace(/\s+/g,'');
+      if (tel.length < 7) {
+        notifica.textContent = 'Inserisci un numero di telefono valido.';
+        notifica.classList.add('error');
+        notifica.style.display = 'block';
+        return false;
+      }
+
+      // Prezzo > 0
+      const prezzo = parseFloat(document.getElementById('prezzo_pattuito').value);
+      if (isNaN(prezzo) || prezzo <= 0) {
+        notifica.textContent = 'Il prezzo pattuito deve essere maggiore di 0.';
+        notifica.classList.add('error');
+        notifica.style.display = 'block';
+        return false;
+      }
+
+      return true;
+    }
+
+    document.getElementById('trasportoForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!validateForm()) return;
+
+      const form = e.target;
+      const notifica = document.getElementById('notifica');
+
+      fetch('/cliente/richieste-trasporto', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(form))
+      })
+      .then(res => res.text())
+      .then(msg => {
+        if (msg.toLowerCase().includes('inviata') || msg.includes('✅')) {
+          notifica.textContent = msg;
+          notifica.classList.add('success');
+          notifica.style.display = 'block';
+          setTimeout(() => window.location.href = "dashboard.html", 600);
+        } else {
+          notifica.textContent = msg || 'Invio non riuscito';
+          notifica.classList.add('error');
+          notifica.style.display = 'block';
+        }
+      })
+      .catch(err => {
+        notifica.textContent = "Errore durante l'invio della richiesta";
+        notifica.classList.add('error');
+        notifica.style.display = 'block';
+        console.error(err);
+      });
+    });
+  </script>
+
+</body>
+</html>
