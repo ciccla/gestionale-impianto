@@ -43,48 +43,60 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    notifica.style.display = 'none';
-    notifica.className = 'notifica';
+  notifica.style.display = 'none';
+  notifica.className = 'notifica';
 
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
 
-    if (!username || !password) {
-      mostraMessaggio('⚠️ Compila tutti i campi.');
+  if (!username || !password) {
+    mostraMessaggio('⚠️ Compila tutti i campi.');
+    return;
+  }
+
+  try {
+    const formData = new FormData(form);
+    const body = new URLSearchParams(formData);
+
+    const res = await fetch(form.action, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'CSRF-Token': csrfToken
+      },
+      credentials: 'include',
+      body
+    });
+
+    if (res.redirected) {
+      window.location.href = res.url;
       return;
     }
 
-    try {
-      const formData = new FormData(form);
-      const body = new URLSearchParams(formData);
+    const contentType = res.headers.get('content-type') || '';
 
-      const res = await fetch(form.action, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'CSRF-Token': csrfToken
-        },
-        credentials: 'include',
-        body
-      });
-
-      const text = await res.text();
-
-      if (res.ok && text.toLowerCase().includes('successo')) {
-        mostraMessaggio('✅ Accesso effettuato con successo', 'success');
-        setTimeout(() => {
-          window.location.href = '/cliente/dashboard.html';
-        }, 800);
-        return;
-      }
-
-      mostraMessaggio(text || '❌ Credenziali errate.');
-    } catch (err) {
-      console.error(err);
-      mostraMessaggio('❌ Errore di rete. Riprova.');
+    if (contentType.includes('text/html')) {
+      window.location.href = '/cliente/dashboard.html';
+      return;
     }
-  });
-});
+
+    const text = await res.text();
+
+    if (res.ok && text.toLowerCase().includes('successo')) {
+      mostraMessaggio('✅ Accesso effettuato con successo', 'success');
+      setTimeout(() => {
+        window.location.href = '/cliente/dashboard.html';
+      }, 800);
+      return;
+    }
+
+    mostraMessaggio(text || '❌ Credenziali errate.');
+  } catch (err) {
+    console.error(err);
+    mostraMessaggio('❌ Errore di rete. Riprova.');
+  }
+    }); 
+    })
